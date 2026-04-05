@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="center">
+    <div class="dashboard card">
+        <div class="dashboard-header">
+            <div>
+                <h2>Welcome back, <span id="user"></span></h2>
+                <p class="subtitle">Organize your day with quick tasks, filters, and MongoDB persistence.</p>
+            </div>
+            <button class="ghost logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="task-panel">
+            <div class="task-input">
+                <input type="text" id="task" placeholder="Add a new task..." onkeydown="if(event.key === 'Enter') addTask()">
+                <button onclick="addTask()">Add Task</button>
+            </div>
+
+            <div class="task-meta">
+                <span id="taskCount">0 tasks</span>
+                <span id="completedCount">0 completed</span>
+            </div>
+
+            <div class="filters">
+                <button id="filterAll" onclick="setFilter('all')">All</button>
+                <button id="filterActive" onclick="setFilter('active')">Active</button>
+                <button id="filterCompleted" onclick="setFilter('completed')">Completed</button>
+                <button class="ghost" onclick="clearCompleted()">Clear done</button>
+            </div>
+
+            <ul id="taskList" class="task-list"></ul>
+        </div>
+    </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
