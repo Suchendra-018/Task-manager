@@ -23,9 +23,22 @@
 
         <div class="task-panel">
             <div class="task-input">
-                <input type="text" id="task" placeholder="Add a new task..." onkeydown="if(event.key === 'Enter') addTask()">
-                <button onclick="addTask()">Add Task</button>
-            </div>
+
+    <input
+        type="text"
+        id="task"
+        placeholder="Add a new task..."
+        onkeydown="if(event.key==='Enter') addTask()">
+
+    <input
+        type="date"
+        id="dueDate">
+
+    <button onclick="addTask()">
+        Add Task
+    </button>
+
+</div>
 
             <div class="stats-grid">
 

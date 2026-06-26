@@ -18,15 +18,20 @@ router.get('/tasks', auth, async (req, res) => {
 // Create task
 router.post('/tasks', auth, async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, dueDate } = req.body;
     if (!text || !text.trim()) {
       return res.status(400).json({ error: 'Task text is required' });
     }
 
     const task = new Task({
-      user: req.user.username,
-      text: text.trim()
-    });
+
+    user:req.user.username,
+
+    text:text.trim(),
+
+    dueDate: dueDate || null
+
+});
 
     await task.save();
     res.status(201).json(task);
@@ -39,10 +44,14 @@ router.post('/tasks', auth, async (req, res) => {
 // Update task
 router.put('/tasks/:id', auth, async (req, res) => {
   try {
-    const { text, completed } = req.body;
+      const { text, completed, dueDate } = req.body;
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, user: req.user.username },
-      { text, completed },
+      {
+    text,
+    completed,
+    dueDate
+}
       { new: true }
     );
 

@@ -154,6 +154,34 @@ function setFilter(filter) {
     displayTasks();
 }
 
+function formatDueDate(date) {
+
+    if (!date) return "";
+
+    const due = new Date(date);
+
+    const today = new Date();
+
+    today.setHours(0,0,0,0);
+
+    const tomorrow = new Date(today);
+
+    tomorrow.setDate(today.getDate()+1);
+
+    due.setHours(0,0,0,0);
+
+    if(due.getTime()===today.getTime())
+        return "📅 Today";
+
+    if(due.getTime()===tomorrow.getTime())
+        return "📅 Tomorrow";
+
+    if(due<today)
+        return " Overdue";
+
+    return "📅 " + due.toLocaleDateString();
+}
+
 function displayTasks() {
     const list = document.getElementById("taskList");
     list.innerHTML = "";
@@ -163,11 +191,26 @@ function displayTasks() {
     visibleTasks.forEach(taskObj => {
         const li = document.createElement("li");
 
+        const textWrapper = document.createElement("div");
         const textSpan = document.createElement("span");
+
         textSpan.innerText = taskObj.text;
-        if (taskObj.completed) {
-            textSpan.classList.add("completed");
-        }
+        if(taskObj.completed)
+         textSpan.classList.add("completed");
+
+      const due = document.createElement("small");
+
+      due.className = "due-date";
+
+        due.innerText = formatDueDate(taskObj.dueDate);
+        if(formatDueDate(taskObj.dueDate)==="Overdue")
+        due.classList.add("overdue");
+
+        textWrapper.appendChild(textSpan);
+
+        textWrapper.appendChild(document.createElement("br"));
+
+        textWrapper.appendChild(due);
 
         const btnDiv = document.createElement("div");
         btnDiv.className = "task-btns";
@@ -191,7 +234,7 @@ function displayTasks() {
         btnDiv.appendChild(editBtn);
         btnDiv.appendChild(deleteBtn);
 
-        li.appendChild(textSpan);
+        li.appendChild(textWrapper);
         li.appendChild(btnDiv);
         list.appendChild(li);
     });
@@ -207,6 +250,7 @@ async function refreshTasks() {
 async function addTask() {
     const taskInput = document.getElementById("task");
     const taskText = taskInput.value.trim();
+    const dueDate = document.getElementById("dueDate").value;
     if (taskText === "") return;
 
     try {
@@ -216,11 +260,15 @@ async function addTask() {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ text: taskText })
+            body: JSON.stringify({
+              text: taskText,
+             dueDate
+            })
         });
 
         if (!response.ok) throw new Error("Failed to create task");
         taskInput.value = "";
+        document.getElementById("dueDate").value = "";
         await refreshTasks();
     } catch (error) {
         console.error(error);
@@ -317,8 +365,9 @@ async function saveEditedTask() {
                 "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
-                text: text
-            })
+            text:text,
+            dueDate: tasks.find(t=>t._id===editTaskId)?.dueDate || null
+           })
         });
 
         if (!response.ok)
