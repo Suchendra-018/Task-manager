@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Dashboard</title>
-<link rel="stylesheet" href="css/style.css">
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 
 <body>
@@ -23,10 +27,32 @@
                 <button onclick="addTask()">Add Task</button>
             </div>
 
-            <div class="task-meta">
-                <span id="taskCount">0 tasks</span>
-                <span id="completedCount">0 completed</span>
-            </div>
+            <div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-title">Total Tasks</div>
+        <div class="stat-value" id="totalTasks">0</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Active Tasks</div>
+        <div class="stat-value" id="activeTasks">0</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Completed</div>
+        <div class="stat-value" id="completedTasks">0</div>
+    </div>
+
+</div>
+
+            <div class="search-box">
+    <input
+        type="text"
+        id="searchTask"
+        placeholder="🔍 Search tasks..."
+        oninput="searchTasks()">
+</div>
 
             <div class="filters">
                 <button id="filterAll" onclick="setFilter('all')">All</button>
@@ -39,7 +65,58 @@
         </div>
     </div>
 </div>
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h2>Delete Task?</h2>
+        <p>This action cannot be undone.</p>
 
+        <div class="modal-buttons">
+            <button id="cancelDelete" class="cancel-btn">
+                Cancel
+            </button>
+
+            <button id="confirmDelete" class="delete-btn">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+<div id="editModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Edit Task</h2>
+
+        <p class="modal-subtitle">
+            Update your task and save the changes.
+        </p>
+
+        <input
+            id="editTaskInput"
+            type="text"
+            placeholder="Task name">
+
+        <div class="modal-buttons">
+
+            <button
+                id="cancelEdit"
+                class="cancel-btn">
+                Cancel
+            </button>
+
+            <button
+                id="saveEdit"
+                class="primary-btn">
+                Save Changes
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="js/script.js"></script>
 </body>
 </html>

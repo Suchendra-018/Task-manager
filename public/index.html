@@ -3,6 +3,7 @@
 <head>
 <title>Login</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
 <div class="center">
@@ -26,12 +27,44 @@
         </form>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script>
 const authButtons = document.querySelectorAll('.auth-switch-btn');
 const authNote = document.getElementById('authNote');
 const submitButton = document.getElementById('submitButton');
 let authMode = 'login';
+
+function showSuccess(message) {
+    Toastify({
+        text: message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        close: true,
+        stopOnFocus: true,
+        style: {
+            background: "linear-gradient(135deg, #6C63FF, #8B5CF6)",
+            borderRadius: "12px",
+            fontWeight: "600"
+        }
+    }).showToast();
+}
+
+function showError(message) {
+    Toastify({
+        text: message,
+        duration: 3500,
+        gravity: "top",
+        position: "right",
+        close: true,
+        stopOnFocus: true,
+        style: {
+            background: "linear-gradient(135deg, #ef4444, #dc2626)",
+            borderRadius: "12px",
+            fontWeight: "600"
+        }
+    }).showToast();
+}
 
 function setAuthMode(mode) {
     authMode = mode;
@@ -70,7 +103,7 @@ async function submitAuthForm(event) {
     const pass = document.getElementById('password').value.trim();
 
     if (!user || !pass) {
-        alert('Please enter both username and password');
+        showError("Please enter both username and password");
         return;
     }
 
@@ -97,14 +130,17 @@ async function submitAuthForm(event) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', user);
 
-        alert(authMode === 'login'
-            ? `Welcome back, ${user}!`
-            : `Account created! Welcome, ${user}.`);
-
-        window.location.href = 'dashboard.html';
+        showSuccess(
+    authMode === "login"
+        ? `Welcome back, ${user}!`
+        : `Account created successfully! Welcome, ${user}.`
+);
+        setTimeout(() => {
+    window.location.href = "dashboard.html";
+}, 1500);
     } catch (error) {
         console.error(error);
-        alert(error.message || 'Unable to complete the request.');
+        showError(error.message || "Unable to complete the request.");
     } finally {
         submitButton.textContent = originalText;
         submitButton.disabled = false;

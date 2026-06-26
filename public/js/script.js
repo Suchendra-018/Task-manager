@@ -8,7 +8,10 @@ if (!user || !token) {
 document.getElementById("user").innerText = user;
 
 let tasks = [];
+let editTaskId = null;
+let searchText = "";
 let currentFilter = "all";
+
 
 async function fetchTasks() {
     try {
@@ -23,23 +26,60 @@ async function fetchTasks() {
     }
 }
 
-function updateSummary() {
+function updateSummary(){
+
     const total = tasks.length;
-    const completed = tasks.filter(task => task.completed).length;
-    document.getElementById("taskCount").innerText = `${total} task${total === 1 ? "" : "s"}`;
-    document.getElementById("completedCount").innerText = `${completed} completed`;
-}
 
-function getFilteredTasks() {
-    if (currentFilter === "active") {
-        return tasks.filter(task => !task.completed);
-    }
-    if (currentFilter === "completed") {
-        return tasks.filter(task => task.completed);
-    }
-    return tasks;
-}
+    const completed = tasks.filter(task=>task.completed).length;
 
+    const active = total - completed;
+
+    document.getElementById("totalTasks").innerText = total;
+
+    document.getElementById("activeTasks").innerText = active;
+
+    document.getElementById("completedTasks").innerText = completed;
+
+}
+function searchTasks(){
+
+    searchText = document
+        .getElementById("searchTask")
+        .value
+        .toLowerCase();
+
+    displayTasks();
+
+}
+function getFilteredTasks(){
+
+    let filtered = tasks;
+
+    if(currentFilter==="active"){
+
+        filtered = filtered.filter(task=>!task.completed);
+
+    }
+
+    else if(currentFilter==="completed"){
+
+        filtered = filtered.filter(task=>task.completed);
+
+    }
+
+    if(searchText){
+
+        filtered = filtered.filter(task=>
+
+            task.text.toLowerCase().includes(searchText)
+
+        );
+
+    }
+
+    return filtered;
+
+}
 function updateFilterButtons() {
     document.querySelectorAll(".filters button").forEach(button => {
         button.classList.toggle("active", button.id === `filter${currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1)}`);
@@ -122,7 +162,7 @@ async function addTask() {
         await refreshTasks();
     } catch (error) {
         console.error(error);
-        alert("Unable to save task. Make sure the server is running.");
+        showError("Unable to save task. Make sure the server is running.");
     }
 }
 
@@ -135,9 +175,10 @@ async function deleteTask(taskId) {
 
         if (!response.ok) throw new Error("Delete failed");
         await refreshTasks();
+        showSuccess("Task deleted successfully!");
     } catch (error) {
         console.error(error);
-        alert("Unable to delete task.");
+        showError("Unable to delete task.");
     }
 }
 
@@ -157,36 +198,82 @@ async function toggleTask(taskId) {
 
         if (!response.ok) throw new Error("Update failed");
         await refreshTasks();
+        showSuccess(
+    task.completed
+        ? "Task marked as active."
+        : "Task marked as completed."
+);
     } catch (error) {
         console.error(error);
-        alert("Unable to update task status.");
+        showError("Unable to update task status.");
     }
 }
 
-async function editTask(taskId) {
+
+function editTask(taskId) {
     const task = tasks.find(item => item._id === taskId);
+
     if (!task) return;
 
-    const newText = prompt("Edit task", task.text);
-    if (newText === null) return;
-    const trimmed = newText.trim();
-    if (trimmed === "") return;
+    editTaskId = taskId;
+
+    document.getElementById("editTaskInput").value = task.text;
+
+    document
+        .getElementById("editModal")
+        .classList.add("show");
+
+    document.getElementById("editTaskInput").focus();
+}
+
+function closeEditModal() {
+    editTaskId = null;
+
+    document
+        .getElementById("editModal")
+        .classList.remove("show");
+}
+
+async function saveEditedTask() {
+
+    const text = document
+        .getElementById("editTaskInput")
+        .value
+        .trim();
+
+    if (text === "") {
+        showError("Task cannot be empty.");
+        return;
+    }
 
     try {
-        const response = await fetch(`${API_BASE}/tasks/${taskId}`, {
+
+        const response = await fetch(`${API_BASE}/tasks/${editTaskId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ text: trimmed })
+            body: JSON.stringify({
+                text: text
+            })
         });
 
-        if (!response.ok) throw new Error("Update failed");
+        if (!response.ok)
+            throw new Error("Update failed");
+
+        closeEditModal();
+
         await refreshTasks();
+
+        showSuccess("Task updated successfully!");
+
     } catch (error) {
+
         console.error(error);
-        alert("Unable to edit task.");
+
+        showError("Unable to update task.");
+
     }
 }
 
@@ -199,9 +286,10 @@ async function clearCompleted() {
 
         if (!response.ok) throw new Error("Clear failed");
         await refreshTasks();
+        showSuccess("Completed tasks cleared.");
     } catch (error) {
         console.error(error);
-        alert("Unable to clear completed tasks.");
+        showError("Unable to clear completed tasks.");
     }
 }
 
@@ -217,3 +305,16 @@ async function initializeApp() {
 }
 
 initializeApp();
+document.getElementById("cancelEdit").onclick = closeEditModal;
+
+document.getElementById("saveEdit").onclick = saveEditedTask;
+
+document
+    .getElementById("editTaskInput")
+    .addEventListener("keydown", function (e) {
+
+        if (e.key === "Enter") {
+            saveEditedTask();
+        }
+
+    });
