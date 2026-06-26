@@ -25,12 +25,37 @@ async function fetchTasks() {
         tasks = [];
     }
 }
+function showSuccess(message) {
+    Toastify({
+        text: message,
+        duration: 2500,
+        gravity: "top",
+        position: "right",
+        close: true,
+        style: {
+            background: "linear-gradient(135deg,#8b5cf6,#6366f1)"
+        }
+    }).showToast();
+}
 
-function updateSummary(){
+function showError(message) {
+    Toastify({
+        text: message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        close: true,
+        style: {
+            background: "#ef4444"
+        }
+    }).showToast();
+}
+
+function updateSummary() {
 
     const total = tasks.length;
 
-    const completed = tasks.filter(task=>task.completed).length;
+    const completed = tasks.filter(task => task.completed).length;
 
     const active = total - completed;
 
@@ -39,6 +64,43 @@ function updateSummary(){
     document.getElementById("activeTasks").innerText = active;
 
     document.getElementById("completedTasks").innerText = completed;
+
+   
+    // Progress Bar
+
+    const percent =
+        total === 0
+            ? 0
+            : Math.round((completed / total) * 100);
+
+    document.getElementById("progressPercent").innerText =
+        `${percent}%`;
+
+    document.getElementById("progressFill").style.width =
+        `${percent}%`;
+
+    document.getElementById("progressText").innerText =
+        `${completed} of ${total} tasks completed`;
+
+    
+    // Bonus Celebration
+  
+
+    if (total > 0 && completed === total) {
+
+        if (!window.allTasksCelebrated) {
+
+            showSuccess("Congratulations! All tasks completed.");
+
+            window.allTasksCelebrated = true;
+
+        }
+
+    } else {
+
+        window.allTasksCelebrated = false;
+
+    }
 
 }
 function searchTasks(){

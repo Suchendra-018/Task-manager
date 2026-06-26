@@ -655,4 +655,65 @@ button.ghost:hover {
     color:white;
 
 }
+.progress-section{
 
+    margin:20px 0 22px;
+
+}
+
+.progress-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:10px;
+
+    color:rgba(255,255,255,.75);
+
+    font-size:15px;
+
+}
+
+.progress-bar{
+
+    height:12px;
+
+    background:rgba(255,255,255,.08);
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+}
+
+.progress-fill{
+
+    width:0;
+
+    height:100%;
+
+    border-radius:999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #8b5cf6,
+            #6366f1
+        );
+
+    transition:width .4s ease;
+
+}
+
+.progress-text{
+
+    margin-top:10px;
+
+    text-align:right;
+
+    color:rgba(255,255,255,.65);
+
+    font-size:14px;
+
+}
