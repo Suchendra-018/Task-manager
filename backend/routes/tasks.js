@@ -51,7 +51,7 @@ router.put('/tasks/:id', auth, async (req, res) => {
     text,
     completed,
     dueDate
-}
+},
       { new: true }
     );
 
